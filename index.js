@@ -79,6 +79,10 @@ const pairingCode = !process.argv.includes("--qr-code");
 const useMobile = process.argv.includes("--mobile");
 let rl = null;
 let rlClosed = false;
+// Keep one pairing-code request per container start. Reconnects must not invalidate
+// the code by requesting several new codes in parallel.
+let pairingRequested = false;
+let pairingInProgress = false;
 if (process.stdin.isTTY && !config.pairingNumber) {
     rl = readline.createInterface({
         input: process.stdin,
@@ -370,17 +374,22 @@ async function startQasimDev() {
                 process.exit(1);
             }
             const doPairing = async (num, attempt = 1) => {
+                if (pairingInProgress)
+                    return;
+                pairingInProgress = true;
                 try {
                     let code = await QasimDev.requestPairingCode(num);
                     code = code?.match(/.{1,4}/g)?.join("-") || code;
                     console.log(chalk.black(chalk.bgGreen(`Your Pairing Code : `)), chalk.black(chalk.white(code)));
                     printLog('success', `Pairing code generated: ${code}`);
+                    pairingInProgress = false;
                     if (rl && !rlClosed) {
                         rl.close();
                         rl = null;
                     }
                 }
                 catch (error) {
+                    pairingInProgress = false;
                     if (attempt < 3) {
                         try {
                             rmSync('./session', { recursive: true, force: true });
@@ -394,7 +403,10 @@ async function startQasimDev() {
                     }
                 }
             };
-            setTimeout(() => doPairing(phoneNumberInput), 3000);
+            if (!pairingRequested) {
+                pairingRequested = true;
+                setTimeout(() => doPairing(phoneNumberInput), 3000);
+            }
         }
         else if (isRegistered) {
             if (rl && !rlClosed) {
