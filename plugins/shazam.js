@@ -5,8 +5,8 @@ const acrcloud = createRequire(import.meta.url)('acrcloud');
 import { downloadContentFromMessage } from '@whiskeysockets/baileys';
 const acr = new acrcloud({
     host: 'identify-eu-west-1.acrcloud.com',
-    access_key: 'c33c767d683f78bd17d4bd4991955d81',
-    access_secret: 'bvgaIAEtADBTbLwiPGYlxupWqkNGIjT7J9Ag2vIu',
+    access_key: process.env.ACRCLOUD_ACCESS_KEY || '',
+    access_secret: process.env.ACRCLOUD_ACCESS_SECRET || '',
 });
 /* ================= MEDIA HELPERS ================= */
 function getAudioOrVideo(message) {

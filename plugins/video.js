@@ -1,7 +1,7 @@
 import axios from 'axios';
 import yts from 'yt-search';
 const DL_API = 'https://api.qasimdev.dpdns.org/api/loaderto/download';
-const API_KEY = 'qasim-dev';
+const API_KEY = process.env.VIDEO_API_KEY || '';
 const wait = (ms) => new Promise(r => setTimeout(r, ms));
 const downloadWithRetry = async (url, retries = 3) => {
     for (let i = 0; i < retries; i++) {

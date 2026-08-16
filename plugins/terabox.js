@@ -85,7 +85,11 @@ export default {
             }
             await sock.sendMessage(chatId, { text: '⏳ *Processing TeraBox link...*\n\nPlease wait, fetching file information...' }, { quoted: message });
             // Fetch file information
-            const apiUrl = `https://api.qasimdev.dpdns.org/api/terabox/download?apiKey=qasim-dev&url=${encodeURIComponent(url)}`;
+            const apiKey = process.env.TERABOX_API_KEY || '';
+            if (!apiKey) {
+                return await sock.sendMessage(chatId, { text: '❌ Este comando requer uma chave de API configurada pelo administrador.' }, { quoted: message });
+            }
+            const apiUrl = `https://api.qasimdev.dpdns.org/api/terabox/download?apiKey=${encodeURIComponent(apiKey)}&url=${encodeURIComponent(url)}`;
             const apiResponse = await apiCallWithRetry(apiUrl, 3, 3000);
             if (!apiResponse?.data?.success || !apiResponse.data?.data?.files || apiResponse?.data?.data?.files?.length === 0) {
                 return await sock.sendMessage(chatId, { text: '❌ *Download failed!*\n\nNo files found or invalid link.' }, { quoted: message });

@@ -1,6 +1,6 @@
 import axios from 'axios';
 const API = 'https://api.qasimdev.dpdns.org/api/spotify/download';
-const API_KEY = 'qasim-dev';
+const API_KEY = process.env.SPOTIFY_API_KEY || '';
 const formatDuration = (ms) => {
     const m = Math.floor(ms / 60000);
     const s = Math.floor((ms % 60000) / 1000);
