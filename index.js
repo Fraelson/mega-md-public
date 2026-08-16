@@ -83,7 +83,8 @@ let rlClosed = false;
 // the code by requesting several new codes in parallel.
 let pairingRequested = false;
 let pairingInProgress = false;
-const pairingReconnectDelayMs = Number(process.env.PAIRING_RECONNECT_DELAY_MS) || 15000;
+// Keep the pairing window open for about one minute before reconnecting.
+const pairingReconnectDelayMs = Number(process.env.PAIRING_RECONNECT_DELAY_MS) || 60000;
 if (process.stdin.isTTY && !config.pairingNumber) {
     rl = readline.createInterface({
         input: process.stdin,
